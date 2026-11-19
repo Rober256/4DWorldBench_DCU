@@ -3,23 +3,25 @@
 # This is an isolated profiling entrypoint; it does not alter the formal run scripts.
 set -o pipefail
 
-ROOT="${FOURDWORLDBENCH_ROOT:-/public/home/lixin1/4dworldbench}"
-CODE_ROOT="$ROOT/code"
-PYTHON="${FOURDWORLDBENCH_PYTHON:-$ROOT/../envs/4dworldbench/bin/python}"
-DATASET="$ROOT/data/videos/dataset_jsons/phygenbench_text_to_4d.json"
-PHYSICS_CACHE="$CODE_ROOT/dimension_description_json/physics_realism.json"
+CODE_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="${FOURDWORLDBENCH_ROOT:-$(dirname -- "$CODE_ROOT")}"
+PYTHON="${FOURDWORLDBENCH_PYTHON:-python}"
+PHYSICS_CACHE="${PHYSICS_QUESTION_CACHE:-$CODE_ROOT/dimension_description_json/physics_realism.json}"
 SEED="${PHYSICS_PROFILE_SEED:-20260813}"
 DEVICE="${DEVICE:-cuda:0}"
 PROFILE_ROOT="${PHYSICS_PROFILE_ROOT:-$ROOT/profiling}"
 RUN_ID="physics_random3_seed${SEED}_$(date +%Y%m%d_%H%M%S)"
 OUT_DIR="$PROFILE_ROOT/$RUN_ID"
 mkdir -p "$OUT_DIR"
+OUT_DIR="$(cd -- "$OUT_DIR" && pwd)"
 
 # DTK env.sh uses an unset variable under nounset; load it safely.
 set +u
 source /opt/dtk-26.04/env.sh
 set -u
-source "$ROOT/use_isolated_cache.sh"
+if [[ -f "$ROOT/use_isolated_cache.sh" ]]; then
+  source "$ROOT/use_isolated_cache.sh"
+fi
 
 # HCU/Triton runtime required by Keye; keep it scoped to this profile.
 export LD_PRELOAD="${LD_PRELOAD:-/opt/dtk-26.04/hip/lib/libamdhip64.so}"
@@ -52,12 +54,11 @@ export PR_TARGET_QUESTIONS="${PR_TARGET_QUESTIONS:-1}"
 export PR_MAX_WORKERS="${PR_MAX_WORKERS:-1}"
 export PR_REQUEST_DELAY="${PR_REQUEST_DELAY:-0.5}"
 export PR_AUTO_RETRY_NULLS=0
-export FOURDWORLDBENCH_WEIGHTS_DIR="$CODE_ROOT/pretrained_weights"
 unset ALL_PROXY all_proxy
 
 # Use the existing generated Physics questions so this profile measures the
 # model/evaluation path and does not add question-generation requests.
-"$PYTHON" - "$PHYSICS_CACHE" "$ROOT/profiling/$RUN_ID/subset_random3.json" "$SEED" <<'PY'
+"$PYTHON" - "$PHYSICS_CACHE" "$OUT_DIR/subset_random3.json" "$SEED" <<'PY'
 import json, random, sys
 src, dst, seed = sys.argv[1], sys.argv[2], int(sys.argv[3])
 items = json.load(open(src, encoding="utf-8"))
@@ -65,11 +66,7 @@ if not isinstance(items, list) or len(items) < 3:
     raise SystemExit("physics question cache must contain at least 3 list items")
 rng = random.Random(seed)
 chosen = rng.sample(items, 3)
-out = []
-for item in chosen:
-    row = dict(item)
-    row["video_list"] = [p.replace("/public/share/rogon_admin/4dworldbench", "/public/home/lixin1/4dworldbench") for p in row.get("video_list", [])]
-    out.append(row)
+out = chosen
 model = {
   "model_name": "ours_14bs2_720p",
   "conditions": [{"condition_meta_info": "physics_profile_random3", "prompts": [
@@ -80,10 +77,13 @@ model = {
       for i, row in enumerate(out, 1)
   ]}]
 }
-json.dump({"dataset_info":{"base_path":"/public/home/lixin1/4dworldbench/data/videos","sampling_seed":seed},"models":[model]}, open(dst,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
+json.dump({"dataset_info":{"base_path":"/public/share/rogon_admin/4dworldbench/data/videos","sampling_seed":seed},"models":[model]}, open(dst,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
 json.dump([{"video_list":row.get("video_list",[]),"prompt":row.get("prompt_en","")} for row in out], open(dst+".selection.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
 print("SELECTED", [row.get("video_list",[]) for row in out])
 PY
+if [[ $? -ne 0 ]]; then
+  exit 1
+fi
 
 # Capture reproducibility and resource snapshots before execution.
 {

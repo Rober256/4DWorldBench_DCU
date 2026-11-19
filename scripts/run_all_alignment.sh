@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Batch evaluation for 4D consistency dimensions
-# Usage: bash run_all_consistency.sh [--device cuda:0]
+# Batch evaluation for condition-4D alignment dimensions (requires OpenAI API)
+# Usage: bash scripts/run_all_alignment.sh [cuda:0] [options]
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DEVICE="cuda:0"
@@ -35,10 +35,11 @@ MODELS=(
 )
 
 DIMENSIONS=(
-    # consistency_viewpoint
-    # consistency_motion_smoothness
-    # consistency_motion_qa
-    consistency_style
+    # alignment_attribute_control
+    alignment_event_control
+    alignment_motion_control
+    alignment_relationship_control
+    alignment_scene_control
 )
 
 TOTAL_DIMS=${#DIMENSIONS[@]}
@@ -48,7 +49,7 @@ CURRENT=0
 FAILED=()
 
 echo "============================================"
-echo "4D Consistency Batch Evaluation"
+echo "Condition-4D Alignment Batch Evaluation"
 echo "  Dimensions: ${TOTAL_DIMS}"
 echo "  Models: ${TOTAL_MODELS}"
 echo "  Total tasks: ${TOTAL}"
@@ -75,7 +76,7 @@ done
 
 echo ""
 echo "============================================"
-echo "Consistency evaluation complete."
+echo "Alignment evaluation complete."
 echo "  Total: ${TOTAL}, Failed: ${#FAILED[@]}"
 if [ ${#FAILED[@]} -gt 0 ]; then
     echo "  Failed: ${FAILED[*]}"

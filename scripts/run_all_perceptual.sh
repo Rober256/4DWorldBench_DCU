@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Batch evaluation for perceptual quality dimensions (no API key required)
-# Usage: bash run_all_perceptual.sh [--device cuda:0]
+# Usage: bash scripts/run_all_perceptual.sh [cuda:0] [options]
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DEVICE="cuda:0"

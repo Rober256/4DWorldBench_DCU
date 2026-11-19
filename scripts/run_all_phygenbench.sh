@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Batch evaluation script for all phygenbench text-to-4D models
-# Usage: bash run_all_phygenbench.sh [--device cuda:6]
+# Usage: bash scripts/run_all_phygenbench.sh [cuda:6] [options]
 
 # --- Config ---
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

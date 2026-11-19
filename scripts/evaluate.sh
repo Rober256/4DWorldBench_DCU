@@ -2,7 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-RUNNER=("${FOURDWORLDBENCH_PYTHON:-python}" "$SCRIPT_DIR/runner.py")
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+RUNNER=("${FOURDWORLDBENCH_PYTHON:-python}" "$PROJECT_ROOT/runner.py")
 PROFILE=0
 PROFILE_OUTPUT=""
 ARGS=()

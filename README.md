@@ -112,7 +112,7 @@ pip install mamba_ssm-2.3.0+cu11torch2.5cxx11abiFALSE-cp311-cp311-linux_x86_64.w
 
 ```bash
 # Evaluate a single model on a single dimension
-bash evaluate.sh \
+bash scripts/evaluate.sh \
   --dataset_json /path/to/dataset.json \
   --model your_model_name \
   --dimension clip_iqa_metrics \
@@ -137,19 +137,18 @@ We provide convenient scripts for batch evaluation:
 
 ```bash
 # Evaluate all models on Perceptual Quality (no API key needed)
-bash run_clipiqa.sh            # CLIP-IQA metrics
-bash run_clipaesthetic.sh      # CLIP Aesthetic metrics
+bash scripts/run_clipiqa.sh            # CLIP-IQA metrics
+bash scripts/run_clipaesthetic.sh      # CLIP Aesthetic metrics
 
 # Evaluate all models on Condition-4D Alignment (requires OPENAI_API_KEY)
-bash run_alignment_attribute.sh      # Dynamic Attribute Control
-bash run_alignment_relationship.sh   # Dynamic Spatial Relationship
-bash run_alignment_motion.sh         # Motion Order Understanding
-bash run_alignment_event.sh          # Complex Plot
-bash run_alignment_scene.sh          # Complex Landscape
-bash run_alignment_camera.sh         # Camera Error
+bash scripts/run_alignment_attribute.sh      # Dynamic Attribute Control
+bash scripts/run_alignment_relationship.sh   # Dynamic Spatial Relationship
+bash scripts/run_alignment_motion.sh         # Motion Order Understanding
+bash scripts/run_alignment_event.sh          # Complex Plot
+bash scripts/run_alignment_scene.sh          # Complex Landscape
 
 # Custom device and dataset path
-DEVICE=cuda:1 DATASET_BASE_DIR=/custom/path bash run_clipiqa.sh
+DEVICE=cuda:1 DATASET_BASE_DIR=/custom/path bash scripts/run_clipiqa.sh
 ```
 
 ## 📊 Supported Models
@@ -298,7 +297,7 @@ def compute_your_metric(json_dir, device, submodules_dict, **kwargs):
 3. Run evaluation:
 
 ```bash
-bash evaluate.sh \
+bash scripts/evaluate.sh \
   --dataset_json /path/to/your_dataset.json \
   --model your_new_model \
   --dimension clip_iqa_metrics \
@@ -326,7 +325,7 @@ graph LR
 
 ### Environment Variables
 
-All `run_*.sh` scripts support the following environment variables:
+All `scripts/run_*.sh` scripts support the following environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -353,8 +352,8 @@ These scripts run entirely on local GPU and do **not** need `OPENAI_API_KEY`:
 
 ```bash
 # Perceptual Quality
-bash run_clipiqa.sh            # CLIP-IQA 
-bash run_clipaesthetic.sh      # CLIP Aesthetic Score
+bash scripts/run_clipiqa.sh            # CLIP-IQA
+bash scripts/run_clipaesthetic.sh      # CLIP Aesthetic Score
 ```
 
 #### API Key Required (LLM-based metrics)
@@ -363,19 +362,18 @@ These scripts call the OpenAI API for LLM-based evaluation. Make sure `OPENAI_AP
 
 ```bash
 # Condition-4D Alignment
-bash run_alignment_attribute.sh      # Dynamic Attribute Control
-bash run_alignment_relationship.sh   # Dynamic Spatial Relationship
-bash run_alignment_motion.sh         # Motion Order Understanding
-bash run_alignment_event.sh          # Complex Plot
-bash run_alignment_scene.sh          # Complex Landscape
-bash run_alignment_camera.sh         # Camera Error
+bash scripts/run_alignment_attribute.sh      # Dynamic Attribute Control
+bash scripts/run_alignment_relationship.sh   # Dynamic Spatial Relationship
+bash scripts/run_alignment_motion.sh         # Motion Order Understanding
+bash scripts/run_alignment_event.sh          # Complex Plot
+bash scripts/run_alignment_scene.sh          # Complex Landscape
 ```
 
 #### Utility Scripts
 
 ```bash
-bash evaluate.sh                     # General entry point (pass --dimension, --model, etc.)
-bash manage_question_cache.sh        # Manage question cache (stats, clear, migrate)
+bash scripts/evaluate.sh                     # General entry point (pass --dimension, --model, etc.)
+bash scripts/manage_question_cache.sh        # Manage question cache (stats, clear, migrate)
 ```
 
 ### Multi-GPU Parallel Evaluation
@@ -383,10 +381,10 @@ bash manage_question_cache.sh        # Manage question cache (stats, clear, migr
 You can run multiple scripts in parallel on different GPUs:
 
 ```bash
-DEVICE=cuda:0 bash run_clipiqa.sh &
-DEVICE=cuda:1 bash run_clipaesthetic.sh &
-DEVICE=cuda:2 bash run_alignment_attribute.sh &
-DEVICE=cuda:3 bash run_alignment_motion.sh &
+DEVICE=cuda:0 bash scripts/run_clipiqa.sh &
+DEVICE=cuda:1 bash scripts/run_clipaesthetic.sh &
+DEVICE=cuda:2 bash scripts/run_alignment_attribute.sh &
+DEVICE=cuda:3 bash scripts/run_alignment_motion.sh &
 wait
 ```
 

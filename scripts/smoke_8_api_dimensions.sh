@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 SMOKE_DATASET="$ROOT/smoke_single_cached_question.json"
 PHYSICS_DATASET="$ROOT/smoke_single_cached_physics.json"
 MODEL=ours_1_3bs2_720p

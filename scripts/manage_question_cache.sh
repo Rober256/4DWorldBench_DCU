@@ -1,11 +1,11 @@
 #!/bin/bash
-"""
-问题缓存管理脚本
-提供便捷的缓存管理功能
-"""
+# 问题缓存管理脚本
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+PYTHON="${FOURDWORLDBENCH_PYTHON:-python}"
 
-CACHE_MANAGER="question_cache_manager.py"
-QA_GENERATOR="adaptive_qa_generator.py"
+CACHE_MANAGER="$PROJECT_ROOT/question_cache_manager.py"
+QA_GENERATOR="$PROJECT_ROOT/adaptive_qa_generator.py"
 
 # 显示使用帮助
 show_help() {
@@ -27,10 +27,10 @@ show_help() {
 show_stats() {
     if [ -z "$1" ]; then
         echo "显示所有维度的缓存统计:"
-        python "$CACHE_MANAGER" --action stats
+        "$PYTHON" "$CACHE_MANAGER" --action stats
     else
         echo "显示维度 '$1' 的缓存统计:"
-        python "$CACHE_MANAGER" --action stats --dimension "$1"
+        "$PYTHON" "$CACHE_MANAGER" --action stats --dimension "$1"
     fi
 }
 
@@ -38,10 +38,10 @@ show_stats() {
 clear_cache() {
     if [ -z "$1" ]; then
         echo "清除所有缓存..."
-        python "$CACHE_MANAGER" --action clear
+        "$PYTHON" "$CACHE_MANAGER" --action clear
     else
         echo "清除维度 '$1' 的缓存..."
-        python "$CACHE_MANAGER" --action clear --dimension "$1"
+        "$PYTHON" "$CACHE_MANAGER" --action clear --dimension "$1"
     fi
 }
 
@@ -59,7 +59,7 @@ migrate_questions() {
     fi
     
     echo "迁移文件 '$1' 中的问题到维度 '$2' 的缓存..."
-    python "$QA_GENERATOR" --json_file "$1" --dimension "$2" --migrate_cache
+    "$PYTHON" "$QA_GENERATOR" --json_file "$1" --dimension "$2" --migrate_cache
 }
 
 # 主逻辑

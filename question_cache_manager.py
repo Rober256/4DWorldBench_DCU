@@ -13,7 +13,7 @@ from pathlib import Path
 class QuestionCacheManager:
     """Question cache manager"""
     
-    def __init__(self, cache_dir: str = "4DWorldBench/dimension_description_json/cache"):
+    def __init__(self, cache_dir: str | Path = Path(__file__).resolve().parent / "4DWorldBench/dimension_description_json/cache"):
         """
         Initialize cache manager
         

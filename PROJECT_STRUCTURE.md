@@ -8,13 +8,12 @@
 .
 ├── README.md                         # 项目介绍、安装方式、评测维度和数据 JSON 格式说明
 ├── requirements.txt                  # Python 依赖列表
-├── evaluate.sh                       # 单次评测的 Shell 入口，解析参数后调用 runner.py
+├── scripts/                          # 单次、批量、冒烟和专项评测的 Shell 脚本
 ├── runner.py                         # 核心评测调度器：读取数据集、生成维度 JSON、动态加载指标模块
 ├── adaptive_qa_generator.py          # 缺失问答项时的自动问题生成逻辑
 ├── question_cache_manager.py         # 问题缓存管理工具
 ├── metric_compatibility.py           # 指标兼容性相关辅助逻辑
 ├── convert_videos_to_dataset.py      # 视频数据转换为评测数据集 JSON 的工具
-├── run_*.sh                          # 各维度或批量评测脚本
 ├── metric/                           # 评测指标实现与第三方指标依赖
 ├── dimension_description_json/        # 各评测维度描述文件，以及部分模型评测结果 JSON
 ├── 4DWorldBench/                     # 额外的维度缓存数据
@@ -29,9 +28,9 @@
 
 ## 核心运行入口
 
-### `evaluate.sh`
+### `scripts/evaluate.sh`
 
-`evaluate.sh` 是推荐的单次评测入口。它接收以下主要参数：
+`scripts/evaluate.sh` 是推荐的单次评测入口。它接收以下主要参数：
 
 - `--dataset_json`：输入数据集 JSON。
 - `--model`：要评测的模型名称。
@@ -60,18 +59,18 @@ python runner.py --dataset_json ... --model ... --dimension ... --device ...
 
 ## 批量运行脚本
 
-顶层的 `run_*.sh` 用于固定维度或批量评测：
+`scripts/run_*.sh` 用于固定维度或批量评测：
 
-- `run_all_perceptual.sh`：批量运行感知质量维度，例如 `perceptual_clip_aesthetic_metrics`、`perceptual_fastvqa`。
-- `run_all_alignment.sh`：批量运行 Condition-4D Alignment 维度，例如事件、运动、关系、场景控制。
-- `run_all_consistency.sh`：批量运行 4D Consistency 维度，例如 viewpoint consistency。
-- `run_all_phygenbench.sh`：面向 PhyGenBench 数据集的批量评测入口。
-- `run_clipiqa.sh`、`run_clipaesthetic.sh`、`run_fastvqa.sh`：单类感知指标脚本。
-- `run_alignment_*.sh`：单个对齐维度脚本。
-- `run_consistency_*.sh`：单个一致性维度脚本。
-- `run_physics_realism.sh`：物理真实性评测脚本。
+- `scripts/run_all_perceptual.sh`：批量运行感知质量维度，例如 `perceptual_clip_aesthetic_metrics`、`perceptual_fastvqa`。
+- `scripts/run_all_alignment.sh`：批量运行 Condition-4D Alignment 维度，例如事件、运动、关系、场景控制。
+- `scripts/run_all_consistency.sh`：批量运行 4D Consistency 维度，例如 viewpoint consistency。
+- `scripts/run_all_phygenbench.sh`：面向 PhyGenBench 数据集的批量评测入口。
+- `scripts/run_clipiqa.sh`、`scripts/run_clipaesthetic.sh`、`scripts/run_fastvqa.sh`：单类感知指标脚本。
+- `scripts/run_alignment_*.sh`：单个对齐维度脚本。
+- `scripts/run_consistency_*.sh`：单个一致性维度脚本。
+- `scripts/run_physics_realism.sh`：物理真实性评测脚本。
 
-这些脚本通常会设置 `CUDA_VISIBLE_DEVICES`、`DEVICE`、`DATASET_JSON`、模型列表和维度列表，然后循环调用 `evaluate.sh`。
+这些脚本通常会设置 `CUDA_VISIBLE_DEVICES`、`DEVICE`、`DATASET_JSON`、模型列表和维度列表，然后循环调用 `scripts/evaluate.sh`。
 
 ## 指标模块目录 `metric/`
 
@@ -142,7 +141,7 @@ python runner.py --dataset_json ... --model ... --dimension ... --device ...
   - `QA_NUM_WORKERS`
   - `QA_REQUEST_DELAY`
   - `QA_MAX_CONSECUTIVE_FAILURES`
-- `question_cache_manager.py`、`manage_question_cache.sh`：问题缓存管理脚本和命令入口。
+- `question_cache_manager.py`、`scripts/manage_question_cache.sh`：问题缓存管理脚本和命令入口。
 
 ## 第三方依赖目录
 
@@ -172,7 +171,7 @@ Lie group PyTorch 扩展，包含：
 
 ```text
 dataset_json
-  -> evaluate.sh
+  -> scripts/evaluate.sh
   -> runner.py
   -> read_dataset_json()
   -> 按 model 过滤 item
@@ -236,7 +235,7 @@ dataset_json
 1. 在 `metric/` 下新增 `<dimension>.py`。
 2. 在模块中实现 `compute_<dimension>(json_dir, device, submodules_dict, **kwargs)`。
 3. 让函数读取 `json_dir` 指向的维度 JSON，并返回 `(score, details)`。
-4. 如需批量运行，在对应的 `run_all_*.sh` 或新增脚本中加入维度名称。
+4. 如需批量运行，在对应的 `scripts/run_all_*.sh` 或新增脚本中加入维度名称。
 5. 如该指标不需要 QA 问题生成，可将维度名加入 `runner.py` 的 `SKIP_QUESTION_GENERATION_DIMENSIONS`。
 
 注意：`runner.py` 的动态导入要求 `--dimension` 与 `metric/<dimension>.py` 文件名匹配。

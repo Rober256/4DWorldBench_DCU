@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 MODEL=ours_1_3bs2_720p
 RUN_SECS=${RUN_SECS:-180}
 OUT_DIR="$ROOT/smoke_13_$(date +%Y%m%d_%H%M%S)"
