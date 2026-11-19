@@ -1,0 +1,29 @@
+{
+  "dataset_info": {
+    "base_path": "/public/share/rogon_admin/4dworldbench/data/videos",
+    "model_type": "text-to-4D",
+    "condition_type": "text"
+  },
+  "models": [
+    {
+      "model_name": "ours_1_3bs2_720p",
+      "conditions": [
+        {
+          "condition_meta_info": "smoke-test",
+          "prompts": [
+            {
+              "prompt_id": "0001",
+              "condition_caption": "A cup of water is slowly poured out in the space station, releasing the liquid into the surrounding area",
+              "generated_videos": [
+                "/public/share/rogon_admin/4dworldbench/data/videos/4dworldbench/ours_1_3bs2_720p/0001.mp4"
+              ],
+              "auxiliary_info": [
+                "Does the visible video show an action consistent with the supplied scene description?"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+# Local baseline: keep source/configuration, exclude runtime and heavyweight artifacts.
+
+# Model weights and checkpoints (remain on disk; not versioned)
+checkpoints/
+pretrained_weights/
+*.pth
+*.pt
+*.pkl
+*.ckpt
+*.safetensors
+*.bin
+
+# Runtime caches and generated evaluation results
+dimension_description_json/frames_cache/
+dimension_description_json/cache/
+dimension_description_json/*_results.json
+4DWorldBench/dimension_description_json/cache/
+
+# Local environments, compiled extensions and build products
+test/
+__pycache__/
+*.pyc
+*.so
+build/
+dist/
+*.egg-info/
+
+# Download/install packages and generated logs
+*.whl
+*.log
+
+# Local settings and temporary environment files
+.claude/
+.vscode/
+env.tmp
